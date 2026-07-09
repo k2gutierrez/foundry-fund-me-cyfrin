@@ -11,7 +11,7 @@ error FundMe__NotOwner();
 
 /**
  * @title A sample Funding Contract
- * @author Patrick Collins
+ * @author Carlos Gutiérrwz
  * @notice This contract is for creating a sample funding contract
  * @dev This implements price feeds as our library
  */
@@ -50,7 +50,9 @@ contract FundMe {
         i_owner = msg.sender;
     }
 
-    /// @notice Funds our contract based on the ETH/USD price
+    /**
+     * @dev Funds our contract based on the ETH/USD price
+     */
     function fund() public payable {
         require(
             msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
@@ -61,6 +63,9 @@ contract FundMe {
         s_funders.push(msg.sender);
     }
 
+    /**
+     * @dev Withdraw funds only owner
+     */
     function withdraw() public onlyOwner {
         for (
             uint256 funderIndex = 0;
@@ -77,6 +82,9 @@ contract FundMe {
         require(success);
     }
 
+    /**
+     * @dev Cheaper withdraw function only owner
+     */
     function cheaperWithdraw() public onlyOwner {
         address[] memory funders = s_funders;
         // mappings can't be in memory, sorry!
@@ -109,26 +117,45 @@ contract FundMe {
         return s_addressToAmountFunded[fundingAddress];
     }
 
+    /**
+     * @dev Get version of priceFeed
+     */
     function getVersion() public view returns (uint256) {
         return s_priceFeed.version();
     }
 
+    /**
+     * @dev Get certain funder address
+     * @param index index of funder to know its address
+     */
     function getFunder(uint256 index) public view returns (address) {
         return s_funders[index];
     }
 
+    /**
+     * @dev Get the owner address
+     */
     function getOwner() public view returns (address) {
         return i_owner;
     }
 
+    /**
+     * @dev Get the AggregatorV3Interface
+     */
     function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
     }
 
+    /**
+     * @dev falback function will call fund()
+     */
     fallback() external payable {
         fund();
     }
 
+    /**
+     * @dev receive function will call fund()
+     */
     receive() external payable {
         fund();
     }
